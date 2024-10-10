@@ -10,7 +10,11 @@ mod shallow {
     }
 }
 
-#[cfg(any(feature = "blocking-network-client", feature = "async-network-client-async-std"))]
+#[cfg(any(
+    feature = "blocking-network-client",
+    feature = "async-network-client-async-std",
+    feature = "async-network-client-tokio"
+))]
 mod blocking_and_async_io {
     use std::sync::atomic::AtomicBool;
 
@@ -162,7 +166,8 @@ mod blocking_and_async_io {
 
     #[maybe_async::test(
         feature = "blocking-network-client",
-        async(feature = "async-network-client-async-std", async_std::test)
+        async(feature = "async-network-client-async-std", async_std::test),
+        async(feature = "async-network-client-tokio", tokio::test)
     )]
     async fn fetch_with_multi_round_negotiation() -> crate::Result {
         for (algorithm, expected_negotiation_rounds) in [
@@ -243,7 +248,8 @@ mod blocking_and_async_io {
 
     #[maybe_async::test(
         feature = "blocking-network-client",
-        async(feature = "async-network-client-async-std", async_std::test)
+        async(feature = "async-network-client-async-std", async_std::test),
+        async(feature = "async-network-client-tokio", tokio::test)
     )]
     async fn fetch_shallow_deepen_zero_does_not_fail() -> crate::Result {
         let (repo, tmp) = try_repo_rw_args("two-origins", ["--depth=2"], Mode::CloneWithShallowSupport)?;
@@ -282,7 +288,8 @@ mod blocking_and_async_io {
 
     #[maybe_async::test(
         feature = "blocking-network-client",
-        async(feature = "async-network-client-async-std", async_std::test)
+        async(feature = "async-network-client-async-std", async_std::test),
+        async(feature = "async-network-client-tokio", tokio::test)
     )]
     async fn fetch_shallow_deepen_not_possible() -> crate::Result {
         let (repo, tmp) = try_repo_rw_args("two-origins", ["--depth=2"], Mode::CloneWithShallowSupport)?;
@@ -338,7 +345,8 @@ mod blocking_and_async_io {
 
     #[maybe_async::test(
         feature = "blocking-network-client",
-        async(feature = "async-network-client-async-std", async_std::test)
+        async(feature = "async-network-client-async-std", async_std::test),
+        async(feature = "async-network-client-tokio", tokio::test)
     )]
     async fn fetch_empty_pack() -> crate::Result {
         for version in [
@@ -411,7 +419,8 @@ mod blocking_and_async_io {
 
     #[maybe_async::test(
         feature = "blocking-network-client",
-        async(feature = "async-network-client-async-std", async_std::test)
+        async(feature = "async-network-client-async-std", async_std::test),
+        async(feature = "async-network-client-tokio", tokio::test)
     )]
     async fn fetch_pack_without_local_destination() -> crate::Result {
         let daemon = spawn_git_daemon_if_async(repo_path("clone-as-base-with-changes"))?;
@@ -470,7 +479,8 @@ mod blocking_and_async_io {
 
     #[maybe_async::test(
         feature = "blocking-network-client",
-        async(feature = "async-network-client-async-std", async_std::test)
+        async(feature = "async-network-client-async-std", async_std::test),
+        async(feature = "async-network-client-tokio", tokio::test)
     )]
     async fn fetch_pack() -> crate::Result {
         let daemon = spawn_git_daemon_if_async({

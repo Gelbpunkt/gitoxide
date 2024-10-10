@@ -1,4 +1,8 @@
-#[cfg(any(feature = "blocking-network-client", feature = "async-network-client-async-std"))]
+#[cfg(any(
+    feature = "blocking-network-client",
+    feature = "async-network-client-async-std",
+    feature = "async-network-client-tokio"
+))]
 mod blocking_and_async_io {
     use gix::{config::tree::Protocol, remote::Direction::Fetch};
     use gix_features::progress;
@@ -11,7 +15,8 @@ mod blocking_and_async_io {
 
     #[maybe_async::test(
         feature = "blocking-network-client",
-        async(feature = "async-network-client-async-std", async_std::test)
+        async(feature = "async-network-client-async-std", async_std::test),
+        async(feature = "async-network-client-tokio", tokio::test)
     )]
     async fn all() -> crate::Result {
         let daemon = spawn_git_daemon_if_async(remote::repo_path("base"))?;

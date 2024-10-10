@@ -1,6 +1,6 @@
 pub use crate::client::non_io_types::connect::{Error, Options};
 
-#[cfg(feature = "async-std")]
+#[cfg(any(feature = "async-std", feature = "tokio"))]
 pub(crate) mod function {
     use crate::client::{git, non_io_types::connect::Error};
 

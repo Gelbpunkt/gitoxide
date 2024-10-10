@@ -142,6 +142,9 @@ mod error {
         SshInvocation(SshInvocationError),
         #[error("The repository path '{path}' could be mistaken for a command-line argument")]
         AmbiguousPath { path: BString },
+        #[cfg(feature = "tokio")]
+        #[error("Timed out")]
+        Timeout(#[from] tokio::time::error::Elapsed),
     }
 
     impl crate::IsSpuriousError for Error {

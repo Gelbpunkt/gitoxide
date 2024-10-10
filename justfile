@@ -117,6 +117,7 @@ check:
     cargo check -p gix-transport --features blocking-client
     cargo check -p gix-transport --features async-client
     cargo check -p gix-transport --features async-client,async-std
+    cargo check -p gix-transport --features async-client,tokio
     cargo check -p gix-transport --features http-client
     cargo check -p gix-transport --features http-client-curl
     cargo check -p gix-transport --features http-client-reqwest

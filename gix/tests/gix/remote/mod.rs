@@ -16,7 +16,11 @@ pub(crate) fn repo(name: &str) -> gix::Repository {
 /// in lower-level crates just yet.
 /// Maybe this changes one day once we implement other protocols like spawning a process via `tokio` or `async-std`, or
 /// provide async HTTP implementations as well.
-#[cfg(any(feature = "blocking-network-client", feature = "async-network-client-async-std"))]
+#[cfg(any(
+    feature = "blocking-network-client",
+    feature = "async-network-client-async-std",
+    feature = "async-network-client-tokio"
+))]
 pub(crate) fn spawn_git_daemon_if_async(
     _base_dir: impl AsRef<std::path::Path>,
 ) -> std::io::Result<Option<gix_testtools::GitDaemon>> {
@@ -24,14 +28,18 @@ pub(crate) fn spawn_git_daemon_if_async(
     {
         Ok(None)
     }
-    #[cfg(feature = "async-network-client-async-std")]
+    #[cfg(any(feature = "async-network-client-async-std", feature = "async-network-client-tokio"))]
     {
         gix_testtools::spawn_git_daemon(_base_dir).map(Some)
     }
 }
 
 /// Turn `remote` into a remote that interacts with the git `daemon`, all else being the same, by creating a new stand-in remote.
-#[cfg(any(feature = "blocking-network-client", feature = "async-network-client-async-std"))]
+#[cfg(any(
+    feature = "blocking-network-client",
+    feature = "async-network-client-async-std",
+    feature = "async-network-client-tokio"
+))]
 pub(crate) fn into_daemon_remote_if_async<'repo, 'a>(
     remote: gix::Remote<'repo>,
     _daemon: Option<&gix_testtools::GitDaemon>,
@@ -41,7 +49,7 @@ pub(crate) fn into_daemon_remote_if_async<'repo, 'a>(
     {
         remote
     }
-    #[cfg(feature = "async-network-client-async-std")]
+    #[cfg(any(feature = "async-network-client-async-std", feature = "async-network-client-tokio"))]
     {
         let mut new_remote = remote
             .repo()

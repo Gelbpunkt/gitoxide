@@ -174,7 +174,11 @@ mod access_feat {
 }
 
 ///
-#[cfg(any(feature = "async-network-client-async-std", feature = "blocking-network-client"))]
+#[cfg(any(
+    feature = "async-network-client-async-std",
+    feature = "async-network-client-tokio",
+    feature = "blocking-network-client"
+))]
 pub mod fetch;
 
 mod access;

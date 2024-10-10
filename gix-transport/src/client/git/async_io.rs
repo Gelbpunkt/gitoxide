@@ -156,3 +156,47 @@ mod async_net {
         }
     }
 }
+
+#[cfg(feature = "tokio")]
+mod async_net {
+    use std::time::Duration;
+
+    use tokio::net::{
+        tcp::{OwnedReadHalf, OwnedWriteHalf},
+        TcpStream,
+    };
+    use tokio_util::compat::{Compat, TokioAsyncReadCompatExt, TokioAsyncWriteCompatExt};
+
+    use crate::client::{git, Error};
+
+    impl git::Connection<Compat<OwnedReadHalf>, Compat<OwnedWriteHalf>> {
+        /// Create a new TCP connection using the `git` protocol of `desired_version`, and make a connection to `host`
+        /// at `port` for accessing the repository at `path` on the server side.
+        /// If `trace` is `true`, all packetlines received or sent will be passed to the facilities of the `gix-trace` crate.
+        pub async fn new_tcp(
+            host: &str,
+            port: Option<u16>,
+            path: bstr::BString,
+            desired_version: crate::Protocol,
+            trace: bool,
+        ) -> Result<git::Connection<Compat<OwnedReadHalf>, Compat<OwnedWriteHalf>>, Error> {
+            let stream = tokio::time::timeout(
+                Duration::from_secs(5),
+                TcpStream::connect(&(host, port.unwrap_or(9418))),
+            )
+            .await??;
+            let (read, write) = stream.into_split();
+            let read = read.compat();
+            let write = write.compat_write();
+            Ok(git::Connection::new(
+                read,
+                write,
+                desired_version,
+                path,
+                None::<(String, _)>,
+                git::ConnectMode::Daemon,
+                trace,
+            ))
+        }
+    }
+}

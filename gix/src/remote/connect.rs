@@ -76,7 +76,11 @@ impl<'repo> Remote<'repo> {
     /// The transport used for connection can be configured via `transport_mut().configure()` assuming the actually
     /// used transport is well known. If that's not the case, the transport can be created by hand and passed to
     /// [to_connection_with_transport()][Self::to_connection_with_transport()].
-    #[cfg(any(feature = "blocking-network-client", feature = "async-network-client-async-std"))]
+    #[cfg(any(
+        feature = "blocking-network-client",
+        feature = "async-network-client-async-std",
+        feature = "async-network-client-tokio"
+    ))]
     #[gix_protocol::maybe_async::maybe_async]
     pub async fn connect(
         &self,
