@@ -1,4 +1,7 @@
-use std::path::{Path, PathBuf};
+use std::{
+    path::{Path, PathBuf},
+    str::FromStr,
+};
 
 use bstr::BStr;
 
@@ -15,6 +18,14 @@ impl Default for Url {
             port: None,
             path: bstr::BString::default(),
         }
+    }
+}
+
+impl FromStr for Url {
+    type Err = parse::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::try_from(s)
     }
 }
 
